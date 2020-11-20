@@ -1,35 +1,18 @@
-import codecs
 import re
 
-from pyspark import SparkContext, SQLContext
+from pyspark.sql import SparkSession
 
 if __name__ == "__main__":
+    spark = SparkSession.builder.master('local').appName("Anomaly").getOrCreate()
+    rdd = spark.read.format('orc').load("E:\\Projects\\sigma\\FileAnomaly\\src\\main\\resources\\test2")
 
-    sc = SparkContext("local", "SQLApp")
-    sqlContext = SQLContext(sc)
-    dataFragment = sqlContext.read.format('orc').load("E:\\Projects\\sigma\\FileAnomaly\\src\\main\\resources\\test2")
+    def process_string(x):
+        return re.sub("[^А-Яа-я\\w]", " ", x.__getitem__('value').lower())
 
-    wordCount = dict()
+    rdd = rdd.rdd.map(process_string)\
+        .flatMap(lambda x: re.split("\\s+", x))\
+        .map(lambda x: (x, 1))\
+        .reduceByKey(lambda x, y: (x + y))\
+        .sortBy(lambda x: x[1])
 
-    def process_string(string):
-        processed_string = re.sub("[^А-Яа-я\\w]", " ", string)
-        processed_string = re.sub("\\s+", " ", processed_string)
-        return processed_string.split()
-
-    def put_words_to_dict(words):
-        for word in words:
-            wordCount[word] = wordCount.pop(word, 0) + 1
-
-    # dataFragment.foreach(lambda row: put_words_to_dict(process_string(row.__getitem__('value'))))
-
-    for row in dataFragment.collect():
-        put_words_to_dict(process_string(row.__getitem__('value')))
-
-    wordCount = sorted(wordCount.items(), key=lambda kv: kv[1])
-
-    file = open("result.txt", 'w')
-    file.close()
-    file = codecs.open("result.txt", "a", "utf-8")
-    for word in wordCount:
-        file.write(str(word[0]) + " - " + str(word[1]) + "\n")
-    file.close()
+    rdd.toDF().coalesce(1).write.mode("overwrite").csv("result.csv")
