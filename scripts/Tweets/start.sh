@@ -15,10 +15,10 @@ POSTGRE_DRIVER="$RESOURCE_FOLDER/postgresql-42.2.8.jar"
 MASTER_PROPERIES="--master $MASTER_IP"
 EXECUTOR_PROPERTIES="--executor-memory 512m"
 DRIVER_PROPERTIES="--conf spark.driver.extraClassPath=$POSTGRE_DRIVER --jars $POSTGRE_DRIVER"
-PY_FILES_PROPERTIES="--py-files $PYTHON_EGG"
+PY_FILES_PROPERTIES="--py-files $PYTHON_EGG,$PYTHON_DEPS"
 COMMAND_PROPERTIES="$MASTER_PROPERIES $EXECUTOR_PROPERTIES $DRIVER_PROPERTIES $PY_FILES_PROPERTIES"
 
-SPARK_HOME="/home/pi/spark-2.2.0-bin-hadoop2.7/bin/"
+SPARK_HOME="/home/pi/spark-3.0.1-bin-hadoop2.7/bin/"
 
 EXTRACTION_CMD="${SPARK_HOME}spark-submit $COMMAND_PROPERTIES $PROJECT_FOLDER/extraction.py"
 LOADING_CMD="${SPARK_HOME}spark-submit $COMMAND_PROPERTIES $PROJECT_FOLDER/loading.py"
@@ -30,7 +30,7 @@ case "$STAGE" in
       eval "ssh $MASTER_SSH \"$EXTRACTION_CMD\""
     ;;
   load)
-      eval "ssh $MASTER_SSH \"$LOADING_CMD_CMD\""
+      eval "ssh $MASTER_SSH \"$LOADING_CMD\""
     ;;
   project)
       eval "ssh $MASTER_SSH \"$PROJECTION_CMD\""

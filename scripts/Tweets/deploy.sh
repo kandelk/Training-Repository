@@ -1,11 +1,14 @@
 #!/bin/bash
-python3 ../setup.py bdist_egg
-
-pip3 install -r requirements.txt -t ./deps
-zip -r dist/deps.zip ./deps
 
 LOCAL_PROJECT_FOLDER="/mnt/e/Projects/sigma/PyhonAnomaly"
 DIST_FOLDER="$LOCAL_PROJECT_FOLDER/dist"
+
+cd "$LOCAL_PROJECT_FOLDER"
+
+python3 setup.py bdist_egg
+
+pip3 install -r requirements.txt -t "./deps"
+cd ./deps; zip -r "$DIST_FOLDER/deps.zip" "."
 
 MASTER_SSH="pi@192.168.1.100"
 SLAVE1_SSH="pi@192.168.1.101"
@@ -13,8 +16,8 @@ SLAVE2_SSH="pi@192.168.1.102"
 
 REMOTE_PROJECT_FOLDER="/home/pi/test"
 MASTER_SSH_PROJECT="${MASTER_SSH}:$REMOTE_PROJECT_FOLDER"
-SLAVE1_SSH_PROJECT="${SLAVE1_SSH}:$REMOTE_PROJECT_FOLDER/resources"
-SLAVE2_SSH_PROJECT="${SLAVE2_SSH}:$REMOTE_PROJECT_FOLDER/resources"
+SLAVE1_SSH_PROJECT="${SLAVE1_SSH}:$REMOTE_PROJECT_FOLDER"
+SLAVE2_SSH_PROJECT="${SLAVE2_SSH}:$REMOTE_PROJECT_FOLDER"
 
 RESOURCES_SCP_SLAVE1_CMD="scp -r $LOCAL_PROJECT_FOLDER/resources/ $SLAVE1_SSH_PROJECT"
 eval "$RESOURCES_SCP_SLAVE1_CMD"
