@@ -1,12 +1,12 @@
 import time
 
 import matplotlib.pyplot as plt
-import numpy as np
+from numpy import arange
 
 
 def create_and_save_hbar(xval, yval, folder):
     fig, ax = plt.subplots()
-    position = np.arange(len(yval))
+    position = arange(len(yval))
 
     ax.barh(position, xval)
 

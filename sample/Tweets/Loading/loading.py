@@ -15,7 +15,7 @@ def clean_data(dataframe):
         lambda df:
             spark.read.jdbc(
                 url=db_url,
-                table=f"(SELECT * FROM tweets WHERE tweet_id LIKE cast({df['tweet_id']} as varchar(255))) as my_table",
+                table=f"(SELECT * FROM tweets WHERE tweet_id LIKE cast({df['tweet_id'].__getitem__('value')} as varchar(255))) as my_table",
                 properties=db_properties
             ).count() == 0
     )

@@ -46,8 +46,7 @@ def main():
 
 if __name__ == "__main__":
     config = ConfigParser()
-    config.read("E:/Projects/sigma/PyhonAnomaly/sample/settings.ini")
-    # config.read("/home/pi/test/settings.ini")
+    config.read("/home/pi/test/settings.ini")
     resource_folder_path = config['resources']['tweets']
 
     db_conf = config['postgresql']
@@ -58,7 +57,6 @@ if __name__ == "__main__":
     csv_conf = config['csv']
 
     spark = SparkSession.builder \
-        .master("local") \
         .getOrCreate()
 
     main()
