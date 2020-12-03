@@ -2,7 +2,7 @@ venv
 .idea
 Anomaly.egg-info
 build
-deps
+deps
 dist
 resources
 sample/settings.ini
