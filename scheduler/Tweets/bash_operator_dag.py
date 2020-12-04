@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 from datetime import timedelta
 
 from airflow import DAG
@@ -18,38 +19,42 @@ default_args = {
 }
 
 dag = DAG(
-    dag_id='Tweets_process',
+    dag_id='Tweets_process_bash_operator',
     default_args=default_args,
     description='A simple DAG',
     schedule_interval='@hourly',
     catchup=False
 )
 
-script = "/home/pi/test/scripts/Tweets/start.sh"
+config = ConfigParser()
+config.read("/home/pi/test/settings.ini")
+
+script_folder = config['common']['script_folder']
+script = f"{script_folder}/start.sh"
 
 if not os.path.exists(script):
-   raise Exception("Cannot locate {}".format(script))
+    raise Exception("Cannot locate {}".format(script))
 
 t1 = BashOperator(
-    task_id= 'Extraction',
+    task_id='Extraction',
     bash_command=script + " extract ",
     dag=dag
 )
 
 t2 = BashOperator(
-    task_id= 'Loading',
+    task_id='Loading',
     bash_command=script + " load ",
     dag=dag
 )
 
 t3 = BashOperator(
-    task_id= 'Project',
+    task_id='Projection',
     bash_command=script + " project ",
     dag=dag
 )
 
 t4 = BashOperator(
-    task_id= 'Analyze',
+    task_id='Analyzing',
     bash_command=script + " analyze ",
     dag=dag
 )
