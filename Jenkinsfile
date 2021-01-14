@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                git 'https://github.com/kandelk/Training-Repository.git'
+                git clone 'https://github.com/kandelk/Training-Repository.git'
 
                 //sh "python setup.py bdist_egg"
 		//bat "python setup.py bdist_egg"
