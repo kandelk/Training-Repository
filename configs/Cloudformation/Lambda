@@ -1,0 +1,172 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "40451477-4f1f-429b-8a30-1eb4c1a6b5df": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -30,
+                    "y": -10
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "913dd5b9-4c18-4e7d-91fa-3e614a3cbbde": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -150,
+                    "y": -10
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "7341f4b3-a256-4b9f-be9c-7e7bc1b6fab9": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 80,
+                    "y": -10
+                },
+                "z": 0,
+                "embeds": []
+            }
+        }
+    },
+    "Resources": {
+        "LambdaRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": "LambdaPolicy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:List*",
+                                        "dynamodb:DescribeReservedCapacity*",
+                                        "dynamodb:DescribeLimits",
+                                        "dynamodb:DescribeTimeToLive"
+                                    ],
+                                    "Resource": "*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:BatchGet*",
+                                        "dynamodb:DescribeStream",
+                                        "dynamodb:DescribeTable",
+                                        "dynamodb:Get*",
+                                        "dynamodb:Query",
+                                        "dynamodb:Scan",
+                                        "dynamodb:BatchWrite*",
+                                        "dynamodb:CreateTable",
+                                        "dynamodb:Delete*",
+                                        "dynamodb:Update*",
+                                        "dynamodb:PutItem"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Project-tweet-date"
+                                        },
+                                        {
+                                            "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Project-tweet-path"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "sqs:DeleteMessage",
+                                        "sqs:GetQueueAttributes",
+                                        "sqs:ReceiveMessage"
+                                    ],
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:Tweet-datalake-queue"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7341f4b3-a256-4b9f-be9c-7e7bc1b6fab9"
+                }
+            },
+            "DependsOn": []
+        },
+        "PutFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": "project.tweet.functions",
+                    "S3Key": "Function.zip"
+                },
+                "Description": "Take sqs trigger event and write it to dynamoDb",
+                "FunctionName": "PutMetadataToDynamo",
+                "Handler": "PutMetadataToDb.lambda_handler",
+                "Runtime": "python3.8",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaRole",
+                        "Arn"
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "40451477-4f1f-429b-8a30-1eb4c1a6b5df"
+                }
+            },
+            "DependsOn": [
+                "LambdaRole"
+            ]
+        },
+        "SqsEvent": {
+            "Type": "AWS::Lambda::EventSourceMapping",
+            "Properties": {
+                "EventSourceArn": {
+                    "Fn::Sub": "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:Tweet-datalake-queue"
+                },
+                "FunctionName": {
+                    "Fn::GetAtt": [
+                        "PutFunction",
+                        "Arn"
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "913dd5b9-4c18-4e7d-91fa-3e614a3cbbde"
+                }
+            },
+            "DependsOn": [
+                "PutFunction"
+            ]
+        }
+    }
+}

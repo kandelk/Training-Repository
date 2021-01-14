@@ -1,0 +1,558 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "e6e5b55d-27c7-4a1b-8103-12b2005a55d9": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 320,
+                    "y": 100
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "7f94dbfa-1020-4c4e-8f8e-509bafe9cf9c": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 320,
+                    "y": -10
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "e06e4785-d32f-42de-9ce6-60a6ad0b1f21": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 200,
+                    "y": 100
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "331b5ad9-66ed-42bb-890b-c75a805619b2": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 80,
+                    "y": 100
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "b6eb0686-1595-49ec-a6a3-5d5f426d12b0"
+                ]
+            },
+            "656817ed-83d7-4bea-b1bf-9476a27fe846": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 200,
+                    "y": -10
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "ef70b122-3790-498d-9ce6-6659ee029aa4": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 200,
+                    "y": -110
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "656817ed-83d7-4bea-b1bf-9476a27fe846"
+                ]
+            },
+            "a6ee3d97-2a98-44ea-a563-2e4a0820cd4f": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 320,
+                    "y": -110
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "7f94dbfa-1020-4c4e-8f8e-509bafe9cf9c"
+                ]
+            },
+            "66346b34-8c35-448f-9ca3-e105500e7b4f": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -50,
+                    "y": 100
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "9acc9bf8-4cba-4066-9c5d-ceeb12bd54ef": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -50,
+                    "y": -90
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "b6eb0686-1595-49ec-a6a3-5d5f426d12b0": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -50,
+                    "y": 200
+                },
+                "z": 0,
+                "embeds": [],
+                "dependson": [
+                    "66346b34-8c35-448f-9ca3-e105500e7b4f"
+                ]
+            },
+            "1d42bbf1-4117-4a22-97a8-dd6979de34ca": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": -50,
+                    "y": -10
+                },
+                "z": 0,
+                "embeds": []
+            }
+        }
+    },
+    "Parameters": {
+        "PswDeveloper": {
+            "Type": "String",
+            "Description": "One time password for developer account"
+        },
+        "PswAnalytic": {
+            "Type": "String",
+            "Description": "One time password for analytic account"
+        }
+    },
+    "Resources": {
+        "Developer": {
+            "Type": "AWS::IAM::User",
+            "Properties": {
+                "LoginProfile": {
+                    "Password": {
+                        "Ref": "PswDeveloper"
+                    },
+                    "PasswordResetRequired": false
+                },
+                "UserName": "Developer1"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "ef70b122-3790-498d-9ce6-6659ee029aa4"
+                }
+            },
+            "DependsOn": [
+                "Developers"
+            ]
+        },
+        "Analyst": {
+            "Type": "AWS::IAM::User",
+            "Properties": {
+                "LoginProfile": {
+                    "Password": {
+                        "Ref": "PswAnalytic"
+                    },
+                    "PasswordResetRequired": false
+                },
+                "UserName": "Analytic1"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "a6ee3d97-2a98-44ea-a563-2e4a0820cd4f"
+                }
+            },
+            "DependsOn": [
+                "Analysts"
+            ]
+        },
+        "Developers": {
+            "Type": "AWS::IAM::Group",
+            "Properties": {
+                "GroupName": "Developers",
+                "Policies": [
+                    {
+                        "PolicyName": "DeveloperPolicy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "s3:ListAllMyBuckets",
+                                    "Resource": "arn:aws:s3:::*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:ListBucket",
+                                        "s3:GetBucketLocation"
+                                    ],
+                                    "Resource": [
+                                        "arn:aws:s3:::project.tweet.kramatorsk.datalake",
+                                        "arn:aws:s3:::project.tweet.kramatorsk.datawarehouse",
+                                        "arn:aws:s3:::project.tweet.kramatorsk.projection"
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:GetObject",
+                                        "s3:GetObjectAcl"
+                                    ],
+                                    "Resource": "arn:aws:s3:::project.tweet.kramatorsk.datalake/*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:PutObject",
+                                        "s3:PutObjectAcl",
+                                        "s3:GetObject",
+                                        "s3:GetObjectAcl",
+                                        "s3:DeleteObject"
+                                    ],
+                                    "Resource": "arn:aws:s3:::project.tweet.kramatorsk.datawarehouse/*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:PutObject",
+                                        "s3:PutObjectAcl",
+                                        "s3:DeleteObject"
+                                    ],
+                                    "Resource": "arn:aws:s3:::project.tweet.kramatorsk.projection/*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "656817ed-83d7-4bea-b1bf-9476a27fe846"
+                }
+            }
+        },
+        "Analysts": {
+            "Type": "AWS::IAM::Group",
+            "Properties": {
+                "GroupName": "Analysts",
+                "Policies": [
+                    {
+                        "PolicyName": "AnalyticPolicy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "s3:ListAllMyBuckets",
+                                    "Resource": "arn:aws:s3:::*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:ListBucket",
+                                        "s3:GetBucketLocation"
+                                    ],
+                                    "Resource": "arn:aws:s3:::project.tweet.kramatorsk.projection"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:GetObject",
+                                        "s3:GetObjectAcl"
+                                    ],
+                                    "Resource": "arn:aws:s3:::project.tweet.kramatorsk.projection/*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7f94dbfa-1020-4c4e-8f8e-509bafe9cf9c"
+                }
+            }
+        },
+        "Datalake": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "project.tweet.kramatorsk.datalake",
+                "NotificationConfiguration": {
+                    "QueueConfigurations": [
+                        {
+                            "Event": "s3:ObjectCreated:Put",
+                            "Queue": {
+                                "Fn::GetAtt": [
+                                    "MetadataQueue",
+                                    "Arn"
+                                ]
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".csv"
+                                        },
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "tweet/"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "Event": "s3:ObjectCreated:Put",
+                            "Queue": {
+                                "Fn::GetAtt": [
+                                    "MetadataQueue",
+                                    "Arn"
+                                ]
+                            },
+                            "Filter": {
+                                "S3Key": {
+                                    "Rules": [
+                                        {
+                                            "Name": "suffix",
+                                            "Value": ".json"
+                                        },
+                                        {
+                                            "Name": "prefix",
+                                            "Value": "youtube/"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                "IntelligentTieringConfigurations": [
+                    {
+                        "Id": "Tweet-folder-tier-configuration",
+                        "Status": "Enabled",
+                        "Prefix": "tweet/",
+                        "Tierings": [
+                            {
+                                "AccessTier": "ARCHIVE_ACCESS",
+                                "Days": 90
+                            },
+                            {
+                                "AccessTier": "DEEP_ARCHIVE_ACCESS",
+                                "Days": 180
+                            }
+                        ]
+                    }
+                ],
+                "LifecycleConfiguration": {
+                    "Rules": [
+                        {
+                            "ExpirationInDays": 29,
+                            "NoncurrentVersionExpirationInDays": 1,
+                            "Prefix": "youtube/",
+                            "Status": "Enabled"
+                        },
+                        {
+                            "Prefix": "tweet/",
+                            "Status": "Enabled",
+                            "Transitions": [
+                                {
+                                    "StorageClass": "INTELLIGENT_TIERING",
+                                    "TransitionInDays": 30
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "331b5ad9-66ed-42bb-890b-c75a805619b2"
+                }
+            },
+            "DependsOn": [
+                "S3Policy"
+            ]
+        },
+        "Datawarehouse": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "project.tweet.kramatorsk.datawarehouse"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "e06e4785-d32f-42de-9ce6-60a6ad0b1f21"
+                }
+            }
+        },
+        "Dataprojection": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "project.tweet.kramatorsk.projection"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "e6e5b55d-27c7-4a1b-8103-12b2005a55d9"
+                }
+            }
+        },
+        "MetadataQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+                "QueueName": "Tweet-datalake-queue"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "66346b34-8c35-448f-9ca3-e105500e7b4f"
+                }
+            }
+        },
+        "TweetMetadata": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "TableName": "Project-tweet-date",
+                "BillingMode": "PROVISIONED",
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                },
+                "KeySchema": [
+                    {
+                        "AttributeName": "metadata",
+                        "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "load_date",
+                        "KeyType": "RANGE"
+                    }
+                ],
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "metadata",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "load_date",
+                        "AttributeType": "S"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "9acc9bf8-4cba-4066-9c5d-ceeb12bd54ef"
+                }
+            }
+        },
+        "S3Policy": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "*"
+                            },
+                            "Action": "SQS:SendMessage",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "MetadataQueue",
+                                    "Arn"
+                                ]
+                            },
+                            "Condition": {
+                                "ArnLike": {
+                                    "aws:SourceArn": "arn:aws:s3:*:*:project.tweet.kramatorsk.datalake"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Queues": [
+                    {
+                        "Ref": "MetadataQueue"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "b6eb0686-1595-49ec-a6a3-5d5f426d12b0"
+                }
+            },
+            "DependsOn": [
+                "MetadataQueue"
+            ]
+        },
+        "TweetPaths": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "TableName": "Project-tweet-path",
+                "BillingMode": "PROVISIONED",
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                },
+                "KeySchema": [
+                    {
+                        "AttributeName": "bucket",
+                        "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "file",
+                        "KeyType": "RANGE"
+                    }
+                ],
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "bucket",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "file",
+                        "AttributeType": "S"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "1d42bbf1-4117-4a22-97a8-dd6979de34ca"
+                }
+            }
+        }
+    }
+}
