@@ -1,4 +1,3 @@
-from configparser import ConfigParser
 from datetime import timedelta
 
 from airflow import DAG
@@ -14,26 +13,23 @@ default_args = {
     'email': ['airflow@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(minutes=5),
+    'retries': 0,
+    'retry_delay': timedelta(seconds=10),
 }
 
 dag = DAG(
     dag_id='Tweets_process_spark_operator',
     default_args=default_args,
     description='A simple DAG',
-    schedule_interval='@hourly',
+    schedule_interval=None,
     catchup=False
 )
 
-config = ConfigParser()
-config.read("/home/pi/test/settings.ini")
+project_folder = "/home/pi/test"
+dist_folder = f"{project_folder}/dist"
 
-project_folder = config['common']['project_folder']
-dist_folder = config['common']['dist_folder']
-
-_config ={
-    'master': config['spark']['remote'],
+_config = {
+    'conn_id': 'spark_default',
     'executor_memory': '512m',
     'py_files': f"{dist_folder}/Anomaly-0.1-py3.8.egg,{dist_folder}/deps.zip",
     'jars': f"{dist_folder}/postgresql-42.2.8.jar",
@@ -42,14 +38,14 @@ _config ={
 
 extraction_py = f"{project_folder}/extraction.py"
 if os.path.exists(extraction_py):
-    t1 = SparkSubmitOperator(
-        task_id='Extraction',
-        application=extraction_py,
-        dag=dag,
-        **_config
-    )
+   t1 = SparkSubmitOperator(
+       task_id='Extraction',
+       application=extraction_py,
+       dag=dag,
+       **_config
+   )
 else:
-    raise Exception("Cannot locate {}".format(extraction_py))
+   raise Exception("Cannot locate {}".format(extraction_py))
 
 loading_py = f"{project_folder}/loading.py"
 if os.path.exists(loading_py):
@@ -64,24 +60,24 @@ else:
 
 projection_py = f"{project_folder}/projection.py"
 if os.path.exists(projection_py):
-    t3 = SparkSubmitOperator(
-        task_id='Projection',
-        application=projection_py,
-        dag=dag,
-        **_config
-    )
+   t3 = SparkSubmitOperator(
+       task_id='Projection',
+       application=projection_py,
+       dag=dag,
+       **_config
+   )
 else:
-    raise Exception("Cannot locate {}".format(projection_py))
+   raise Exception("Cannot locate {}".format(projection_py))
 
-analysis_py = f"{project_folder}/analysis.py"
-if os.path.exists(analysis_py):
-    t4 = SparkSubmitOperator(
-        task_id='Analysis',
-        application=analysis_py,
-        dag=dag,
-        **_config
-    )
-else:
-    raise Exception("Cannot locate {}".format(analysis_py))
+#analysis_py = f"{project_folder}/analysis.py"
+#if os.path.exists(analysis_py):
+#   t4 = SparkSubmitOperator(
+#       task_id='Analysis',
+#       application=analysis_py,
+#       dag=dag,
+#       **_config
+#   )
+#else:
+#   raise Exception("Cannot locate {}".format(analysis_py))
 
-t1 >> t2 >> t3 >> t4
+t1 >> t2 >> t3

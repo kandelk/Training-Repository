@@ -1,4 +1,3 @@
-from configparser import ConfigParser
 from datetime import timedelta
 
 from airflow import DAG
@@ -26,11 +25,7 @@ dag = DAG(
     catchup=False
 )
 
-config = ConfigParser()
-config.read("/home/pi/test/settings.ini")
-
-script_folder = config['common']['script_folder']
-script = f"{script_folder}/start.sh"
+script = "/home/pi/test/scripts/Tweets/start.sh"
 
 if not os.path.exists(script):
     raise Exception("Cannot locate {}".format(script))
@@ -42,21 +37,21 @@ t1 = BashOperator(
 )
 
 t2 = BashOperator(
-    task_id='Loading',
-    bash_command=script + " load ",
-    dag=dag
+   task_id='Loading',
+   bash_command=script + " load ",
+   dag=dag
 )
 
 t3 = BashOperator(
-    task_id='Projection',
-    bash_command=script + " project ",
-    dag=dag
+   task_id='Projection',
+   bash_command=script + " project ",
+   dag=dag
 )
 
 t4 = BashOperator(
-    task_id='Analyzing',
-    bash_command=script + " analyze ",
-    dag=dag
+   task_id='Analyzing',
+   bash_command=script + " analyze ",
+   dag=dag
 )
 
-t1 >> t2 >> t3 >> t4
+t1 << t2 << t3 << t4
