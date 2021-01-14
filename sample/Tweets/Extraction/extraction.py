@@ -1,5 +1,4 @@
 from configparser import ConfigParser
-from datetime import date
 from os import walk
 
 import psycopg2
@@ -93,7 +92,6 @@ def main():
     conn = psycopg2.connect(dbname=db_name, user=db_properties['user'],
                             password=db_properties['password'], host=db_host)
     cursor = conn.cursor()
-
     cursor.execute("SELECT MAX(last_load) FROM sync")
     last_load_timestamp = cursor.fetchone()[0]
 
@@ -107,24 +105,21 @@ def main():
 
 if __name__ == "__main__":
     config = ConfigParser()
-    # config.read("/home/pi/test/settings.ini")
-    config.read("E:\\Projects\\sigma\\PyhonAnomaly\\sample\\settings.ini")
+    config.read("/home/pi/test/settings.ini")
+    # config.read("E:\\Projects\\sigma\\PyhonAnomaly\\sample\\settings.ini")
 
     resource_config = config['resources']
 
     db_conf = config['postgresql']
-    db_url = db_conf['url_local']
+    db_url = db_conf['url']
     db_properties = {'user': db_conf['username'], 'password': db_conf['password'], 'driver': db_conf['driver']}
 
     db_name = db_conf['database']
-    db_host = db_conf['host_local']
+    db_host = db_conf['host']
 
     csv_conf = config['csv']
 
     spark = SparkSession.builder \
-        .master(config['spark']['local']) \
-        .config("spark.driver.extraClassPath", db_conf['driver_classpath']) \
-        .appName("test") \
         .getOrCreate()
 
     main()

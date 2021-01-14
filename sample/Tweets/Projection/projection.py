@@ -9,18 +9,24 @@ def main():
                             password=db_password, host=db_host)
     cursor = conn.cursor()
 
-    query = "CREATE OR REPLACE VIEW managers_view AS " \
-            "SELECT created_at, tweet, user_name, city, country, state, continent " \
-            "FROM tweets"
+    tweet_view = "CREATE OR REPLACE VIEW managers_view AS " \
+                 "SELECT created_at, tweet, user_name, city, country, state, continent " \
+                 "FROM tweets"
+    cursor.execute(tweet_view)
 
-    cursor.execute(query)
+    youtube_view = "CREATE OR REPLACE VIEW youtube_view AS " \
+                   "SELECT \"publishedAt\", \"channelTitle\", description, title " \
+                   "FROM youtube"
+    cursor.execute(youtube_view)
+
     conn.commit()
-
     cursor.close()
+
 
 if __name__ == "__main__":
     config = ConfigParser()
     config.read("/home/pi/test/settings.ini")
+    # config.read("E:\\Projects\\sigma\\PyhonAnomaly\\sample\\settings.ini")
     resource_folder_path = config['resources']['tweets']
 
     db_conf = config['postgresql']
