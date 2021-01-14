@@ -4,8 +4,8 @@ pipeline {
     stages {
     	stage('Setup') {
             steps {
-		sh 'echo "Entering ..."'
-		sh "python setup.py bdist_egg"
+		bat 'echo "Entering ..."'
+		bat "python setup.py bdist_egg"
             }
         }
     }
