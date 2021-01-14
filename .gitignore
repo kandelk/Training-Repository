@@ -1,2 +1,8 @@
 venv
 .idea
+Anomaly.egg-info
+build
+deps
+dist
+resources
+sample/settings.ini

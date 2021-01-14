@@ -1,0 +1,44 @@
+#!/bin/bash
+
+STAGE=$1
+
+MASTER_IP="spark://192.168.1.100:7077"
+MASTER_SSH="pi@192.168.1.100"
+
+PROJECT_FOLDER="/home/pi/test"
+RESOURCE_FOLDER="$PROJECT_FOLDER/dist"
+
+PYTHON_EGG="$RESOURCE_FOLDER/Anomaly-0.1-py3.8.egg"
+PYTHON_DEPS="$RESOURCE_FOLDER/deps.zip"
+POSTGRE_DRIVER="$RESOURCE_FOLDER/postgresql-42.2.8.jar"
+
+MASTER_PROPERIES="--master $MASTER_IP"
+EXECUTOR_PROPERTIES="--executor-memory 512m"
+DRIVER_PROPERTIES="--conf spark.driver.extraClassPath=$POSTGRE_DRIVER --jars $POSTGRE_DRIVER"
+PY_FILES_PROPERTIES="--py-files $PYTHON_EGG,$PYTHON_DEPS"
+COMMAND_PROPERTIES="$MASTER_PROPERIES $EXECUTOR_PROPERTIES $DRIVER_PROPERTIES $PY_FILES_PROPERTIES"
+
+SPARK_HOME="/home/pi/spark-3.0.1-bin-hadoop2.7/bin/"
+
+EXTRACTION_CMD="${SPARK_HOME}spark-submit $COMMAND_PROPERTIES $PROJECT_FOLDER/extraction.py"
+LOADING_CMD="${SPARK_HOME}spark-submit $COMMAND_PROPERTIES $PROJECT_FOLDER/loading.py"
+PROJECTION_CMD="${SPARK_HOME}spark-submit $COMMAND_PROPERTIES $PROJECT_FOLDER/projection.py"
+ANALYS_CMD="${SPARK_HOME}spark-submit $COMMAND_PROPERTIES $PROJECT_FOLDER/analysis.py"
+
+case "$STAGE" in
+  extract)
+      eval "ssh $MASTER_SSH \"$EXTRACTION_CMD\""
+    ;;
+  load)
+      eval "ssh $MASTER_SSH \"$LOADING_CMD\""
+    ;;
+  project)
+      eval "ssh $MASTER_SSH \"$PROJECTION_CMD\""
+    ;;
+  analyze)
+      eval "ssh $MASTER_SSH \"$ANALYS_CMD\""
+    ;;
+  *)
+      eval "ssh $MASTER_SSH \"$EXTRACTION_CMD && $LOADING_CMD && $PROJECTION_CMD && $ANALYS_CMD\""
+    ;;
+esac
