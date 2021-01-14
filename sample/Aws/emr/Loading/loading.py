@@ -1,3 +1,4 @@
+import io
 from configparser import ConfigParser
 
 import psycopg2
@@ -14,17 +15,6 @@ def process_tweet_data(dataframe):
 
 def process_youtube_data(dataframe):
     return dataframe.withColumn("publishedAt", func.to_date("publishedAt"))
-
-
-def clean_data(dataframe):
-    return dataframe.filter(
-        lambda df:
-            spark.read.jdbc(
-                url=db_url,
-                table=f"(SELECT * FROM tweets WHERE tweet_id LIKE cast({df['tweet_id'].__getitem__('value')} as varchar(255))) as my_table",
-                properties=db_properties
-            ).count() == 0
-    )
 
 
 def read_dataframe_from_table(table):
@@ -45,8 +35,8 @@ def write_dataframe_to_table(df: DataFrame, table):
 
 
 def clear_table(table):
-    conn = psycopg2.connect(dbname=db_name, user=db_username,
-                            password=db_password, host=db_host)
+    conn = psycopg2.connect(dbname=db_name, user=db_properties['user'],
+                            password=db_properties['password'], host=db_host)
     cursor = conn.cursor()
 
     clear_query = sql.SQL("DELETE FROM {table}").format(
@@ -79,20 +69,22 @@ def main():
 
 
 if __name__ == "__main__":
-    config = ConfigParser()
-    config.read("/home/pi/test/settings.ini")
-    # config.read("E:\\Projects\\sigma\\PyhonAnomaly\\sample\\settings.ini")
-    resource_folder_path = config['resources']['tweets']
-
-    db_conf = config['postgresql']
-    db_url = db_conf['url']
-    db_properties = {'user': db_conf['username'], 'password': db_conf['password'], 'driver': db_conf['driver']}
-    db_name = db_conf['database']
-    db_username = db_conf['username']
-    db_password = db_conf['password']
-    db_host = db_conf['host']
-
     spark = SparkSession.builder \
         .getOrCreate()
+    sc = spark.sparkContext
+
+    config_list = sc.textFile("s3://project.tweet.functions/resources/settings.ini").collect()
+    buf = io.StringIO("\n".join(config_list))
+
+    config = ConfigParser()
+    config.read_file(buf)
+
+    db_conf = config['postgresql']
+
+    db_url = db_conf['url_rds']
+    db_properties = {'user': db_conf['username'], 'password': db_conf['password'], 'driver': db_conf['driver']}
+
+    db_name = db_conf['database_rds']
+    db_host = db_conf['host_rds']
 
     main()

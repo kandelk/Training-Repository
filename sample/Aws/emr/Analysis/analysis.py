@@ -1,3 +1,4 @@
+import io
 from configparser import ConfigParser
 
 from pyspark.sql import functions as func, SparkSession
@@ -65,18 +66,20 @@ def main():
     analyze_youtube_by_channel()
 
 if __name__ == "__main__":
-    config = ConfigParser()
-    # config.read('/home/pi/test/settings.ini')
-    config.read("E:\\Projects\\sigma\\PyhonAnomaly\\sample\\settings.ini")
+    spark = SparkSession.builder \
+        .getOrCreate()
+    sc = spark.sparkContext
 
-    save_plot_folder = config['resources']['folder_local']
+    config_list = sc.textFile("s3://project.tweet.functions/resources/settings.ini").collect()
+    buf = io.StringIO("\n".join(config_list))
+
+    config = ConfigParser()
+    config.read_file(buf)
 
     db_conf = config['postgresql']
-    db_url = db_conf['url_local']
+    db_url = db_conf['url_rds']
     db_properties = {'user': db_conf['username'], 'password': db_conf['password'], 'driver': db_conf['driver']}
 
-    spark = SparkSession.builder \
-        .config("spark.driver.extraClassPath", "E:\\Projects\\sigma\\PyhonAnomaly\\dist\\postgresql-42.2.8.jar") \
-        .getOrCreate()
+    save_plot_folder = config['s3']['plot_save_bucket']
 
     main()

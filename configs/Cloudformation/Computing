@@ -1,0 +1,278 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "5af83cbe-7bb5-4e80-8547-7703ac79cac3": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 190,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "c97d7b68-bfa4-4ac6-9e66-93301b456f91": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 360,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "94adbbaa-a05b-4345-bf1c-3dc0469c25c0": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 360,
+                    "y": -20
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "044324a7-cef8-4af5-aee4-c05b27b3dac1": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 510,
+                    "y": 90
+                },
+                "z": 1,
+                "embeds": []
+            },
+            "e605fb00-d290-4f76-bf20-3a2b1b3dc9f6": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 510,
+                    "y": -20
+                },
+                "z": 1,
+                "embeds": [],
+                "isassociatedwith": [
+                    "044324a7-cef8-4af5-aee4-c05b27b3dac1"
+                ]
+            },
+            "253f7762-700a-4bec-b3ce-7d694c82c766": {
+                "source": {
+                    "id": "e605fb00-d290-4f76-bf20-3a2b1b3dc9f6"
+                },
+                "target": {
+                    "id": "044324a7-cef8-4af5-aee4-c05b27b3dac1"
+                },
+                "z": 2
+            }
+        }
+    },
+    "Parameters": {
+        "EmrInstanceType": {
+            "Type" : "String",
+            "Default" : "m4.large"
+        },
+        "EmrBootstrapActionPath": {
+            "Type" : "String",
+            "Default" : "s3://project.tweet.functions/resources/bootstrap_action.sh"
+        },
+        "EmrLogPath": {
+            "Type" : "String",
+            "Default" : "s3://project.tweet.functions/logs/"
+        },
+        "EmrClusterName": {
+            "Type" : "String",
+            "Default" : "Tweet cluster"
+        },
+        "EmrCoreInstanceCount": {
+            "Type" : "Number",
+            "Default" : 1
+        },
+        "DBInstanceID": {
+            "Default": "data-warehouse",
+            "Type": "String"
+        },
+        "DBInstanceType": {
+            "Default": "db.t2.micro",
+            "Type": "String"
+        },
+        "DBUsername": {
+            "Default": "postgres",
+            "Type": "String",
+            "Description": "Master username"
+        },
+        "DBPassword": {
+            "Type": "String",
+            "Description": "Master password"
+        },
+        "DBPublicAccess": {
+            "Type": "String",
+            "Default": "true"
+        }
+    },
+    "Resources": {
+        "PostgreSql": {
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": {
+                "DBInstanceIdentifier": {"Ref": "DBInstanceID"},
+                "DBInstanceClass": {"Ref": "DBInstanceType"},
+                "AllocatedStorage": 5,
+                "BackupRetentionPeriod": 0,
+                "DeletionProtection": false,
+                "Engine": "postgres",
+                "MasterUsername": {"Ref": "DBUsername"},
+                "MasterUserPassword": {"Ref": "DBPassword"},
+                "PubliclyAccessible": {"Ref": "DBPublicAccess"},
+                "StorageType": "standard"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "5af83cbe-7bb5-4e80-8547-7703ac79cac3"
+                }
+            }
+        },
+        "Spark": {
+            "Type": "AWS::EMR::Cluster",
+            "Properties": {
+                "Applications": [
+                    {
+                        "Name": "Spark"
+                    },
+                    {
+                        "Name": "Hadoop"
+                    }
+                ],
+                "BootstrapActions": [
+                    {
+                        "Name": "Libraries action",
+                        "ScriptBootstrapAction": {
+                            "Path": {"Ref": "EmrBootstrapActionPath"}
+                        }
+                    }
+                ],
+                "Configurations": [
+                    {
+                        "Classification": "spark-env",
+                        "Configurations": [
+                            {
+                                "Classification": "export",
+                                "ConfigurationProperties": {
+                                    "PYSPARK_PYTHON": "/usr/bin/python3"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "Instances": {
+                    "MasterInstanceGroup": {
+                        "InstanceCount": 1,
+                        "InstanceType": {"Ref" : "EmrInstanceType"},
+                        "Market": "ON_DEMAND",
+                        "Name": "Master"
+                    },
+                    "CoreInstanceGroup": {
+                        "InstanceCount": {"Ref": "EmrCoreInstanceCount"},
+                        "InstanceType": {"Ref": "EmrInstanceType"},
+                        "Market": "ON_DEMAND",
+                        "Name": "Core"
+                    },
+                    "TerminationProtected": false
+                },
+                "LogUri": {"Ref": "EmrLogPath"},
+                "Name": {"Ref": "EmrClusterName"},
+                "ReleaseLabel": "emr-6.2.0",
+                "VisibleToAllUsers": true,
+                "JobFlowRole": {
+                    "Ref": "emrEc2InstanceProfile"
+                },
+                "ServiceRole": {
+                    "Ref": "emrRole"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "c97d7b68-bfa4-4ac6-9e66-93301b456f91"
+                }
+            }
+        },
+        "emrRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2008-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "elasticmapreduce.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceRole"
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "94adbbaa-a05b-4345-bf1c-3dc0469c25c0"
+                }
+            }
+        },
+        "emrEc2Role": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2008-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Path": "/",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "044324a7-cef8-4af5-aee4-c05b27b3dac1"
+                }
+            }
+        },
+        "emrEc2InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "emrEc2Role"
+                    }
+                ]
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "e605fb00-d290-4f76-bf20-3a2b1b3dc9f6"
+                }
+            }
+        }
+    }
+}

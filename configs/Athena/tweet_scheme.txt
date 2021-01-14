@@ -1,0 +1,1 @@
+created_at timestamp, tweet_id string, tweet string, likes int, retweet_count int, source string, user_id string, user_name string, user_screen_name string, user_description string, user_join_date string, user_followers_count string, user_location string, lat string, long string, city string, country string, continent string, state string, state_code string, collected_at string

@@ -1,3 +1,4 @@
+import io
 from configparser import ConfigParser
 
 import psycopg2
@@ -24,18 +25,21 @@ def main():
 
 
 if __name__ == "__main__":
-    config = ConfigParser()
-    config.read("/home/pi/test/settings.ini")
-    # config.read("E:\\Projects\\sigma\\PyhonAnomaly\\sample\\settings.ini")
-    resource_folder_path = config['resources']['tweets']
-
-    db_conf = config['postgresql']
-    db_name = db_conf['database']
-    db_username = db_conf['username']
-    db_password = db_conf['password']
-    db_host = db_conf['host']
-
     spark = SparkSession.builder \
         .getOrCreate()
+    sc = spark.sparkContext
+
+    config_list = sc.textFile("s3://project.tweet.functions/resources/settings.ini").collect()
+    buf = io.StringIO("\n".join(config_list))
+
+    config = ConfigParser()
+    config.read_file(buf)
+
+    db_conf = config['postgresql']
+
+    db_username = db_conf['username']
+    db_password = db_conf['password']
+    db_name = db_conf['database_rds']
+    db_host = db_conf['host_rds']
 
     main()
