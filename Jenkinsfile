@@ -1,10 +1,10 @@
 pipeline {
-    agent { docker { image 'python:3.9.0' } }
+    agent any
 
     stages {
     	stage('Setup') {
             steps {
-		sh 'python --version'
+		bat 'docker --version'
             }
         }
     }
