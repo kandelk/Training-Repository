@@ -5,7 +5,7 @@ sudo yum update
 
 sudo yum install --downloadonly --downloaddir=/home/ec2-user/deps/ python3
 
-sudo yum install ./deps
+sudo yum install deps/*
 sudo pip3 install proxy.py
 
 wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1MEHZsztAkQUv6a6MCX805b8LQM6LG_WI' -O key.pem
