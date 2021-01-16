@@ -3,6 +3,7 @@ venv
 Anomaly.egg-info
 build
 deps
-dist
+dist/*
+!dist/*.jar
 resources
 sample/settings.ini
