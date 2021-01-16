@@ -8,7 +8,6 @@ pipeline {
 			}
 			steps {
 				sh 'python setup.py bdist_egg'
-				sh 'zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py'
 			}
 		}
 		stage('Deploy') {
@@ -20,6 +19,8 @@ pipeline {
 				SCRIPTS_KEY = "${BUCKET_NAME}/scripts"
 			}
 			steps {
+				sh 'zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py'
+				
 				sh 'aws s3 cp ${SCRIPT_FOLDER}/Analysis/analysis.py ${SCRIPTS_KEY}'
 				sh 'aws s3 cp ${SCRIPT_FOLDER}/Extraction/extraction.py ${SCRIPTS_KEY}'
 				sh 'aws s3 cp ${SCRIPT_FOLDER}/Loading/loading.py ${SCRIPTS_KEY}'
