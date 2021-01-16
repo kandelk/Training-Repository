@@ -7,7 +7,7 @@ def generate_csv():
            "user_join_date,user_followers_count,user_location,lat,long,city,country,continent,state,state_code," \
            "collected_at\n"
     random_int = random.randint(1, 59)
-    row = "2020-10-15 00:00:" + random_int + "," + random_int + ",Test string " + random_int + ",0.0,0.0,Twitter for iPhone,8.24259601," \
+    row = f"2020-10-15 00:00:{random_int},{random_int},Test string {random_int},0.0,0.0,Twitter for iPhone,8.24259601," \
           "Michelle Ferg,MichelleFerg4,,2017-01-25 14:16:17,27.0,,,,,,,,,2020-10-21 00:00:01.553481849"
 
     return header + row
