@@ -3,9 +3,6 @@ pipeline {
 	stages {
 		stage('Build') {
 			agent { docker { image 'python:3.9.0' } }
-			environment {
-				LAMBDA_FOLDER = "sample/Aws/Lambda"
-			}
 			steps {
 				sh 'python setup.py bdist_egg'
 			}
@@ -13,6 +10,7 @@ pipeline {
 		stage('Deploy') {
 			agent { label 'slave01' }
 			environment {
+				LAMBDA_FOLDER = "sample/Aws/Lambda"
 				SCRIPT_FOLDER = "sample/Aws/emr"
 				BUCKET_NAME = "s3://project.tweet.functions"
 				RESOURCES_KEY = "${BUCKET_NAME}/resources"
