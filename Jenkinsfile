@@ -4,7 +4,7 @@ pipeline {
 		stage('Build') {
 			agent { label 'slave01' }
 			steps {
-				sh 'python3 setup.py bdist_egg'
+				sh 'python setup.py bdist_egg'
 			}
 		}
 		stage('Deploy') {
