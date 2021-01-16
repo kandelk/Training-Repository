@@ -8,6 +8,7 @@ pipeline {
 			agent { label 'slave01' }
 			steps {
 				sh 'python3.9 setup.py bdist_egg'
+				sh 'mv dist/Anomaly-0.1-py3.9.egg dist/Anomaly-0.1-py3.8.egg'
 				sh 'zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py'
 			}
 		}
