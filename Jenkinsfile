@@ -3,8 +3,12 @@ pipeline {
 	stages {
 		stage('Build') {
 			agent { label 'slave01' }
+			environment {
+				LAMBDA_FOLDER = "sample/Aws/Lambda"
+			}
 			steps {
 				sh 'python3 setup.py bdist_egg'
+				zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py
 			}
 		}
 		stage('Deploy') {
