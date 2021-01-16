@@ -2,12 +2,12 @@ pipeline {
 	agent none
 	stages {
 		stage('Build') {
-			agent { label 'slave01' }
+			agent { docker { image 'python:3.9.0' } }
 			environment {
 				LAMBDA_FOLDER = "sample/Aws/Lambda"
 			}
 			steps {
-				sh 'python3 setup.py bdist_egg'
+				sh 'python setup.py bdist_egg'
 				sh 'zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py'
 			}
 		}
