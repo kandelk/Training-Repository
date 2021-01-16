@@ -31,7 +31,7 @@ pipeline {
 				sh 'aws s3 cp dist/postgresql-42.2.8.jar ${RESOURCES_KEY}'
 				sh 'aws s3 cp configs/emr/python_config.json ${RESOURCES_KEY}'
 
-				sh 'aws s3 cp sample/Aws/Lambda/Function.zip ${RESOURCES_KEY}'
+				sh 'aws s3 cp sample/Aws/Lambda/Function.zip ${BUCKET_NAME}/'
 			}
 		}
 	}
