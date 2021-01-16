@@ -16,8 +16,8 @@ pipeline {
 			environment {
 				SCRIPT_FOLDER = "sample/Aws/emr"
 				BUCKET_NAME = "s3://project.tweet.functions"
-				RESOURCES_KEY = "${BUCKET_NAME}/resources"
-				SCRIPTS_KEY = "${BUCKET_NAME}/scripts"
+				RESOURCES_KEY = "${BUCKET_NAME}/resources/"
+				SCRIPTS_KEY = "${BUCKET_NAME}/scripts/"
 			}
 			steps {				
 				sh 'aws s3 cp ${SCRIPT_FOLDER}/Analysis/analysis.py ${SCRIPTS_KEY}'
