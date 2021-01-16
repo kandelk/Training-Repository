@@ -27,7 +27,7 @@ pipeline {
 				sh 'aws s3 cp ${SCRIPT_FOLDER}/Projection/projection.py ${SCRIPTS_KEY}'
 
 				sh 'aws s3 cp scripts/Aws/bootstrap_action.sh ${RESOURCES_KEY}'
-				sh 'aws s3 cp dist/Anomaly-0.1-py3.9.egg ${RESOURCES_KEY}'
+				sh 'aws s3 cp dist/Anomaly-0.1-py3.8.egg ${RESOURCES_KEY}'
 				sh 'aws s3 cp dist/postgresql-42.2.8.jar ${RESOURCES_KEY}'
 				sh 'aws s3 cp configs/emr/python_config.json ${RESOURCES_KEY}'
 
