@@ -2,13 +2,14 @@ pipeline {
 	agent none
 	stages {
 		stage('Build') {
-			agent { label 'slave01' }
 			environment {
 				LAMBDA_FOLDER = "sample/Aws/Lambda"
 			}
+			agent { label 'slave01' }
 			steps {
-				sh 'python3 setup.py bdist_egg'
-				zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py
+				sh 'python3.9 setup.py bdist_egg'
+				sh 'mv dist/Anomaly-0.1-py3.9.egg dist/Anomaly-0.1-py3.8.egg'
+				sh 'zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py'
 			}
 		}
 		stage('Deploy') {
@@ -16,10 +17,10 @@ pipeline {
 			environment {
 				SCRIPT_FOLDER = "sample/Aws/emr"
 				BUCKET_NAME = "s3://project.tweet.functions"
-				RESOURCES_KEY = "${BUCKET_NAME}/resources"
-				SCRIPTS_KEY = "${BUCKET_NAME}/scripts"
+				RESOURCES_KEY = "${BUCKET_NAME}/resources/"
+				SCRIPTS_KEY = "${BUCKET_NAME}/scripts/"
 			}
-			steps {
+			steps {				
 				sh 'aws s3 cp ${SCRIPT_FOLDER}/Analysis/analysis.py ${SCRIPTS_KEY}'
 				sh 'aws s3 cp ${SCRIPT_FOLDER}/Extraction/extraction.py ${SCRIPTS_KEY}'
 				sh 'aws s3 cp ${SCRIPT_FOLDER}/Loading/loading.py ${SCRIPTS_KEY}'
