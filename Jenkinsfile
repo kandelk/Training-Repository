@@ -8,7 +8,7 @@ pipeline {
 			}
 			steps {
 				sh 'python3 setup.py bdist_egg'
-				zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py
+				sh 'zip -j ${LAMBDA_FOLDER}/Function ${LAMBDA_FOLDER}/PutMetadataToDb.py'
 			}
 		}
 		stage('Deploy') {
