@@ -2,7 +2,7 @@ pipeline {
 	agent none
 	stages {
 		stage('Build') {
-			agent { docker { image 'python:3.9.0' } }
+			agent { label 'slave01' }
 			steps {
 				sh 'python setup.py bdist_egg'
 			}
